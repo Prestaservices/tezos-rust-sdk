@@ -60,7 +60,7 @@ impl CryptoProvider for DefaultSecp256K1CryptoProvider {
     fn sign(&self, message: &[u8], secret: &[u8]) -> Result<Vec<u8>> {
         use k256::ecdsa::signature::hazmat::PrehashSigner;
 
-        let sk = k256::ecdsa::SigningKey::from_bytes(secret.into())
+        let sk = k256::ecdsa::SigningKey::from_slice(secret)
             .map_err(|_error| Error::InvalidSecretKeyBytes)?;
 
         let signature: k256::ecdsa::Signature = sk.sign_prehash(message)?;
@@ -74,7 +74,7 @@ impl CryptoProvider for DefaultSecp256K1CryptoProvider {
         let vk = k256::ecdsa::VerifyingKey::from_sec1_bytes(public_key)
             .map_err(|_error| Error::InvalidPublicKeyBytes)?;
         let signature: k256::ecdsa::Signature =
-            k256::ecdsa::Signature::from_bytes(signature.into())
+            k256::ecdsa::Signature::from_slice(signature)
                 .map_err(|_error| Error::InvalidSignatureBytes)?;
         Ok(vk.verify_prehash(message, &signature).is_ok())
     }
@@ -92,7 +92,7 @@ impl CryptoProvider for DefaultP256CryptoProvider {
     fn sign(&self, message: &[u8], secret: &[u8]) -> Result<Vec<u8>> {
         use p256::ecdsa::signature::hazmat::PrehashSigner;
 
-        let sk = p256::ecdsa::SigningKey::from_bytes(secret.into())
+        let sk = p256::ecdsa::SigningKey::from_slice(secret)
             .map_err(|_error| Error::InvalidSecretKeyBytes)?;
 
         let signature: p256::ecdsa::Signature = sk.sign_prehash(message.into())?;
@@ -106,7 +106,7 @@ impl CryptoProvider for DefaultP256CryptoProvider {
         let vk = p256::ecdsa::VerifyingKey::from_sec1_bytes(public_key)
             .map_err(|_error| Error::InvalidPublicKeyBytes)?;
         let signature: p256::ecdsa::Signature =
-            p256::ecdsa::Signature::from_bytes(signature.into())
+            p256::ecdsa::Signature::from_slice(signature)
                 .map_err(|_error| Error::InvalidSignatureBytes)?;
         Ok(vk.verify_prehash(message, &signature).is_ok())
     }
